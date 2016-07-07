@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "bluebird": "^3.3.4",
+    "hellojs": "^1.13.2",
     "lodash": "^4.12.0",
     "web3": "^0.16.0"
   }
