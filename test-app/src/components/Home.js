@@ -1,4 +1,3 @@
-import 'connected-profiles/lib/reddit';
 import hello from 'hellojs';
 import React, { Component } from 'react';
 
@@ -20,6 +19,7 @@ export default class ConnectButton extends Component {
       kind: 'self',
       title: 'This is a test',
       text: 'This is the body of my test',
+      sendreplies: false,
     });
   }
 

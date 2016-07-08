@@ -1,5 +1,5 @@
 module.exports = {
   deploy: [
-    'Contract',
+    'UportRegistry',
   ],
 };
