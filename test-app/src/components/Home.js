@@ -9,11 +9,18 @@ export default class ConnectButton extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick() {
-    hello('reddit').login({
+  async handleClick() {
+    await hello('reddit').login({
       redirect_uri: 'http://localhost:3000/oauth/reddit',
       scope: 'submit edit',
-    }).then(() => console.log('logged in'));
+    });
+
+    await hello('reddit').api('api/submit', 'post', {
+      sr: 'UportProofs',
+      kind: 'self',
+      title: 'This is a test',
+      text: 'This is the body of my test',
+    });
   }
 
   render() {

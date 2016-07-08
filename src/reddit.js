@@ -11,7 +11,16 @@ hello.init({
       grant: 'https://www.reddit.com/api/v1/access_token',
     },
     refresh: true,
-    // The base URL changes to oauth.reddit.com when bearer tokens are used.
-    base: 'https://www.reddit.com/api/v1/',
+    base: 'https://oauth.reddit.com/',
+    xhr(payload) {
+      const token = payload.query.access_token;
+      delete payload.query.access_token;
+      if (token) {
+        payload.headers = {
+          Authorization: `Bearer ${token}`,
+        };
+      }
+      return true;
+    },
   },
 });
