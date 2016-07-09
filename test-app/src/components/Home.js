@@ -1,3 +1,4 @@
+import * as reddit from 'connected-profiles/lib/reddit';
 import hello from 'hellojs';
 import React, { Component } from 'react';
 
@@ -9,18 +10,10 @@ export default class ConnectButton extends Component {
   }
 
   async handleClick() {
-    await hello('reddit').login({
-      redirect_uri: 'http://localhost:3000/oauth/reddit',
-      scope: 'submit edit',
-    });
-
-    await hello('reddit').api('api/submit', 'post', {
-      sr: 'UportProofs',
-      kind: 'self',
-      title: 'This is a test',
-      text: 'This is the body of my test',
-      sendreplies: false,
-    });
+    const options = { redirectUri: 'http://localhost:3000/oauth/reddit' };
+    const username = await reddit.getLoggedInUsername(options);
+    const proofUrl = await reddit.publishProofToReddit('0xdeadbeef', username);
+    console.error(proofUrl);
   }
 
   render() {

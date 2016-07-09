@@ -1,4 +1,5 @@
 import hello from 'hellojs';
+import _ from 'lodash';
 
 
 hello.init({
@@ -24,14 +25,14 @@ hello.init({
   },
 });
 
-const PROOF_TEMPLATE = "\
+const proofTitle = _.template("I control Ethereum account ${address}.");
+
+const proofText = _.template("\
 I'm posting this to prove that **/u/${username}** controls the Ethereum account, \
 **${address}**.\
-";
+");
 
-const PROOF_UPDATE_TEMPLATE = "\
-I'm posting this to prove that **/u/${username}** controls the Ethereum account, \
-**${address}**.\n\
+const proofUpdateText = _.template(proofTitle.source + "\n\
 \n\
 I registered this claim with a [transaction](${txUrl}) referring to a \
 [cryptographic proof](${ipfsUrl}) that only my signing key can create. \
@@ -40,14 +41,38 @@ That proof is reproduced below.\n\
 ```\n\
 ${tokenRecord}\n\
 ```\n\
-";
+");
 
-export function getLoggedInUsername() {
 
+export async function getLoggedInUsername(options) {
+  const helloReddit = options.helloReddit || hello('reddit');
+  await helloReddit.login({
+    redirect_uri: options.redirectUri,
+    scope: 'identity submit edit',
+  });
+
+  const user = await helloReddit.api('api/v1/me');
+  return user.name;
 }
 
-export function publishProofToReddit(address, username) {
+export async function publishProofToReddit(address, username, options = {}) {
+  const title = proofTitle({ address });
+  const text = proofText({ address, username });
+  const helloReddit = options.helloReddit || hello('reddit');
+  const result = await helloReddit.api('api/submit', 'post', {
+    sr: 'UportProofs',
+    kind: 'self',
+    sendreplies: false,
+    title,
+    text,
+  });
 
+  // result.jquery is an ugly data structure that seems intended for passing
+  // to jQuery for updating Reddit's UI. Stringify it and regex out the
+  // submission URL.
+  const linkPattern = new RegExp('"([^"]+?/comments/[^"]+?)"');
+  const match = linkPattern.exec(JSON.stringify(result));
+  return match[1];
 }
 
 export function usernameToken(username, url, providers) {
