@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import * as reddit from 'connected-profiles/lib/reddit';
+import { reddit } from 'connected-profiles';
 import contracts from 'connected-profiles/lib/contracts/development';
 import React, { Component } from 'react';
 import { waitForContract } from 'transaction-monad/lib/utils';
@@ -40,7 +40,7 @@ export default class ConnectButton extends Component {
       ipfsBasePath: 'https://ipfs.infura.io/ipfs/',
       txBasePath: 'https://test.ether.camp/transaction/',
     };
-    const claimRecord = await reddit.proveLoggedInUsername(accounts[0], options);
+    const claimRecord = await reddit.prove.proveLoggedInUsername(accounts[0], options);
     console.log(claimRecord);
   }
 

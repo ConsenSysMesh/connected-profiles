@@ -3,49 +3,10 @@ import hello from 'hellojs';
 import indentString from 'indent-string';
 import ipfs from 'ipfs-js';
 import _ from 'lodash';
-import t from 'tcomb';
 import uport from 'uport-registry';
-
-
-hello.init({
-  reddit: {
-    name: 'Reddit',
-    oauth: {
-      version: '2',
-      auth: 'https://www.reddit.com/api/v1/authorize',
-      grant: 'https://www.reddit.com/api/v1/access_token',
-    },
-    refresh: true,
-    base: 'https://oauth.reddit.com/',
-    xhr(payload) {
-      const token = payload.query.access_token;
-      delete payload.query.access_token;
-      if (token) {
-        payload.headers = {
-          Authorization: `Bearer ${token}`,
-        };
-      }
-      return true;
-    },
-  },
-});
-
-const proofTitle = _.template("I control Ethereum account ${address}.");
-
-const PROOF_TEXT_TEMPLATE = "\
-I'm posting this to prove that **/u/${username}** controls the Ethereum account \
-**${address}**. This proof lets me use my username in [${appName}](${appUrl}) \
-and in any other Ethereum-based app.\
-";
-const proofText = _.template(PROOF_TEXT_TEMPLATE);
-
-const proofUpdateText = _.template(PROOF_TEXT_TEMPLATE + "\n\
-\n\
-I registered this proof with a [transaction](${txUrl}) that contains a \
-[reference to my claim](${ipfsUrl}). That claim is reproduced below.\n\
-\n\
-${claimRecord}\n\
-");
+import './init';
+import { proofTitle, proofText, proofUpdateText } from './templates';
+import { ProofOptions } from '../options';
 
 
 export async function getLoggedInUsername(options) {
@@ -122,7 +83,7 @@ export async function registerClaim(claimRecord, options) {
   try {
     fetchedRecords = await uport.getAttributes(registryAddress, subjectAddress);
   } catch (err) {
-    console.error(err);
+    // An error is thrown when no attributes have been registered.
   }
   const existingRecords = fetchedRecords || [];
   const updatedRecords = existingRecords.concat(claimRecord);
@@ -136,15 +97,14 @@ export async function registerClaim(claimRecord, options) {
   return { tx: txhash, ipfs: ipfsHash };
 }
 
-export async function updateProofOnReddit(claimRecord, hashes, options = {}) {
+export function renderUpdatedProof(claimRecord, hashes, options = {}) {
   const ipfsBasePath = options.ipfsBasePath || 'https://gateway.ipfs.io/ipfs/';
   const txBasePath = options.txBasePath || 'https://live.ether.camp/transaction/';
   const ipfsUrl = ipfsBasePath + hashes.ipfs;
   const txUrl = txBasePath + hashes.tx;
-
   const appInfo = getAppInfo(options);
   const account = claimRecord.payload.claim.account[0];
-  const text = proofUpdateText({
+  return proofUpdateText({
     ...appInfo,
     address: claimRecord.payload.subject.address,
     username: account.identifier,
@@ -152,31 +112,33 @@ export async function updateProofOnReddit(claimRecord, hashes, options = {}) {
     ipfsUrl,
     txUrl,
   });
+}
 
+function thingIdForClaim(claimRecord) {
+  // Parse the post ID from the URL.
+  const account = claimRecord.payload.claim.account[0];
   const idPattern = /\/comments\/(\w+)/;
   const postId = idPattern.exec(account.proofUrl)[1];
-  const thingId = 't3_' + postId;
+  return 't3_' + postId;
+}
 
+export async function updateProofOnReddit(claimRecord, hashes, options = {}) {
   const helloClient = options.helloClient || hello('reddit');
   await helloClient.api('api/editusertext', 'post', {
     api_type: 'json',
-    thing_id: thingId,
-    text,
+    thing_id: thingIdForClaim(claimRecord),
+    text: renderUpdatedProof(claimRecord, hashes, options),
   });
 }
 
-export const ProofOptions = t.struct({
-  ipfsProvider: t.Object,
-  redirectUri: t.String,
-  registryAddress: t.String,
-  web3Provider: t.Object,
-  appName: t.maybe(t.String),
-  appUrl: t.maybe(t.String),
-  helloClient: t.maybe(t.Object),
-  ipfsBasePath: t.maybe(t.String),
-  txBasePath: t.maybe(t.String),
-}, 'ProofOptions');
-
+/**
+ * Post an Ethereum address to Reddit and send a transaction referring to the post.
+ *
+ * hello.js must be initialized with a Reddit client ID before this can be
+ * called. e.g.: hello('reddit').init({ reddit: 'CLIENT-ID' })
+ *
+ * @return {object} The claim record that was registered on the blockchain.
+ */
 export async function proveLoggedInUsername(address, options) {
   const proofOptions = ProofOptions(options);
   const username = await getLoggedInUsername(proofOptions);
@@ -185,12 +147,4 @@ export async function proveLoggedInUsername(address, options) {
   const hashes = await registerClaim(claimRecord, proofOptions);
   await updateProofOnReddit(claimRecord, hashes, proofOptions);
   return claimRecord;
-}
-
-export function getUsername(address, { loaders }) {
-
-}
-
-export function verifyUsername(address) {
-
 }
