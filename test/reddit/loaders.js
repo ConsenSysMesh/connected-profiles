@@ -7,7 +7,7 @@ import { waitForContract, waitForReceipt } from 'transaction-monad/lib/utils';
 import uport from 'uport-registry';
 import Web3 from 'web3';
 import contracts from '../../src/contracts/development';
-import { ProfileLoader } from '../../src/services/reddit/loaders';
+import { ProfileLoader, UsernameLoader } from '../../src/services/reddit/loaders';
 import { IpfsProviderStub } from '../_utils/ipfs';
 
 global.Promise = Promise;  // Use bluebird for better error logging during development.
@@ -51,10 +51,29 @@ describe('loaders', () => {
 
   it('fetches profile', async function () {
     const loader = new ProfileLoader({ registryAddress });
-    const profileData = await loader.load(sender);
-    expect(profileData).to.deep.equal({
+    const profile = await loader.load(sender);
+    expect(profile).to.deep.equal({
       address: sender,
-      profile: JSON.parse(UPORT_PROFILE),
+      attributes: JSON.parse(UPORT_PROFILE),
+    });
+  });
+
+  it('fetches username', async function () {
+    const loader = new UsernameLoader({ registryAddress });
+    const usernameData = await loader.load(sender);
+    expect(usernameData).to.deep.equal({
+      address: sender,
+      username: 'natrius',
+    });
+  });
+
+  it('handles addresses without usernames', async function () {
+    const anonymous = '0xa94b7f0465e98609391c623d0560c5720a3f2d33';
+    const loader = new UsernameLoader({ registryAddress });
+    const usernameData = await loader.load(anonymous);
+    expect(usernameData).to.deep.equal({
+      address: anonymous,
+      username: null,
     });
   });
 });
