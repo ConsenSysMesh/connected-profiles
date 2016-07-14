@@ -19,10 +19,14 @@
     "eslint": "^2.9.0",
     "eslint-config-airbnb": "^8.0.0",
     "eslint-plugin-react": "^5.0.1",
+    "ethereumjs-testrpc": "^2.0.9",
+    "sinon": "^1.17.4",
+    "transaction-monad": "file:../transaction-monad",
     "truffle": "^1.0.3"
   },
   "dependencies": {
     "bluebird": "^3.3.4",
+    "dataloader": "^1.2.0",
     "hellojs": "^1.13.2",
     "ipfs-js": "0.0.10",
     "lodash": "^4.12.0",
