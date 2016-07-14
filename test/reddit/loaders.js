@@ -18,9 +18,11 @@ const UPORT_PROFILE_HASH = 'QmWiN11H6ZgQY2ZVjwLrtDVeJ3uU2vKbVWmUz5jVr1xZ2k';
 describe('loaders', () => {
   let registryAddress;
   let sender;
+  let ipfsProvider;
+  let web3Provider;
 
   before(async function () {
-    const web3Provider = TestRPC.provider({ seed: 'TestRPC is awesome!' });
+    web3Provider = TestRPC.provider({ seed: 'TestRPC is awesome!' });
     const web3 = new Web3(web3Provider);
     const getAccounts = Promise.promisify(web3.eth.getAccounts);
     const accounts = await getAccounts();
@@ -39,7 +41,7 @@ describe('loaders', () => {
     const stubs = { add: sinon.stub(), cat: sinon.stub() };
     stubs.add.returns([null, UPORT_PROFILE_HASH]);
     stubs.cat.returns([null, UPORT_PROFILE]);
-    const ipfsProvider = new IpfsProviderStub(stubs);
+    ipfsProvider = new IpfsProviderStub(stubs);
 
     // Register a profile for sender.
     uport.setWeb3Provider(web3Provider);
@@ -50,7 +52,7 @@ describe('loaders', () => {
   });
 
   it('fetches profile', async function () {
-    const loader = new ProfileLoader({ registryAddress });
+    const loader = new ProfileLoader({ registryAddress, ipfsProvider, web3Provider });
     const profile = await loader.load(sender);
     expect(profile).to.deep.equal({
       address: sender,
@@ -59,7 +61,7 @@ describe('loaders', () => {
   });
 
   it('fetches username', async function () {
-    const loader = new UsernameLoader({ registryAddress });
+    const loader = new UsernameLoader({ registryAddress, ipfsProvider, web3Provider });
     const usernameData = await loader.load(sender);
     expect(usernameData).to.deep.equal({
       address: sender,
@@ -69,7 +71,7 @@ describe('loaders', () => {
 
   it('handles addresses without usernames', async function () {
     const anonymous = '0xa94b7f0465e98609391c623d0560c5720a3f2d33';
-    const loader = new UsernameLoader({ registryAddress });
+    const loader = new UsernameLoader({ registryAddress, ipfsProvider, web3Provider });
     const usernameData = await loader.load(anonymous);
     expect(usernameData).to.deep.equal({
       address: anonymous,

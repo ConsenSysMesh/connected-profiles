@@ -28,6 +28,7 @@
     "bluebird": "^3.3.4",
     "dataloader": "^1.2.0",
     "hellojs": "^1.13.2",
+    "indent-string": "^3.0.0",
     "ipfs-js": "0.0.10",
     "lodash": "^4.12.0",
     "tcomb": "^3.2.5",

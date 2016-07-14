@@ -4,11 +4,16 @@ import uport from 'uport-registry';
 
 
 export function profileFetcher(options) {
-  const { registryAddress } = options;
+  const { registryAddress, ipfsProvider, web3Provider } = options;
   return function getProfiles(addresses) {
+    uport.setIpfsProvider(ipfsProvider);
+    uport.setWeb3Provider(web3Provider);
     const profilePromises = addresses.map(address => {
       return uport.getAttributes(registryAddress, address)
-        .then((attributes) => ({ address, attributes }));
+        .then((attributes) => ({ address, attributes }))
+        // uport-registry throws an error for addresses without registered
+        // attributes.
+        .catch(() => ({ address, attributes: [] }));
     });
     return Promise.all(profilePromises);
   };

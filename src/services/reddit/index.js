@@ -1,2 +1,2 @@
+export * as loaders from './loaders';
 export * as prove from './prove';
-export * as verify from './verify';
