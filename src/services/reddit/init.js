@@ -22,4 +22,10 @@ hello.init({
       return true;
     },
   },
+}, {
+  popup: {
+    height: 450,
+    width: 850,
+    resizable: 1,
+  },
 });
