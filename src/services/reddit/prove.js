@@ -73,7 +73,7 @@ export function usernameClaim(address, username, url) {
 }
 
 export async function registerClaim(claimRecord, options) {
-  const { web3Provider, ipfsProvider, registryAddress } = options;
+  const { web3Provider, ipfsProvider, registryAddress, txOptions = {}} = options;
   uport.setWeb3Provider(web3Provider);
   uport.setIpfsProvider(ipfsProvider);
   ipfs.setProvider(ipfsProvider);
@@ -93,7 +93,7 @@ export async function registerClaim(claimRecord, options) {
   const ipfsHash = await addJson(updatedRecords);
 
   const txhash = await uport.setAttributes(
-    registryAddress, updatedRecords, { from: subjectAddress });
+    registryAddress, updatedRecords, { from: subjectAddress, ...txOptions });
   return { tx: txhash, ipfs: ipfsHash };
 }
 

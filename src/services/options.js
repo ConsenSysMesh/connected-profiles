@@ -11,4 +11,5 @@ export const ProofOptions = t.struct({
   helloClient: t.maybe(t.Object),
   ipfsBasePath: t.maybe(t.String),
   txBasePath: t.maybe(t.String),
+  txOptions: t.maybe(t.Object),
 }, 'ProofOptions');
