@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import t from 'tcomb';
 
 
@@ -11,15 +12,7 @@ const Contract = t.struct({
 }, 'Contract');
 
 // Mock the Pudding interface with a whisk method that collects contract data.
-const collector = {
-  contracts: {},
-  whisk(contractData) {
-    const contractName = contractData.contract_name;
-    collector.contracts[contractName] = Contract(contractData);
-  },
-};
-
-export default class Collector {
+export class Collector {
   constructor() {
     this.contracts = {};
   }
@@ -28,4 +21,10 @@ export default class Collector {
     const contractName = contractData.contract_name;
     this.contracts[contractName] = Contract(contractData);
   }
+}
+
+export function collectFromLoaders(envLoaders) {
+  const collector = new Collector();
+  _.forEach(envLoaders, (loader) => loader.load(collector));
+  return collector.contracts;
 }

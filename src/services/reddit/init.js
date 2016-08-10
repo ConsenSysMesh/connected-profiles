@@ -9,7 +9,7 @@ hello.init({
       auth: 'https://www.reddit.com/api/v1/authorize',
       grant: 'https://www.reddit.com/api/v1/access_token',
     },
-    refresh: true,
+    refresh: false,
     base: 'https://oauth.reddit.com/',
     xhr(payload) {
       const token = payload.query.access_token;
