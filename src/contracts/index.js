@@ -1,7 +1,10 @@
 /**
  * Export Truffle-generated contract data that can be used without Pudding.
  */
-import consensys from './consensys-testnet';
-import development from './development';
+import { collectFromLoaders } from './collector';
+import * as loaders from './loaders';
 
-export { consensys, development };
+
+export const consensys = collectFromLoaders(loaders.consensys);
+export const development = collectFromLoaders(loaders.development);
+export const mainnet = collectFromLoaders(loaders.mainnet);
