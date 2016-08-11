@@ -9,13 +9,18 @@ import { proofTitle, proofText, proofUpdateText } from './templates';
 import { ProofOptions } from '../options';
 
 
-export async function getLoggedInUsername(options) {
+export function login(options) {
   const helloClient = options.helloClient || hello('reddit');
-  await helloClient.login({
+  return helloClient.login({
+    force: false,
     redirect_uri: options.redirectUri,
     scope: 'identity submit edit',
   });
+}
 
+export async function getLoggedInUsername(options) {
+  await login(options);
+  const helloClient = options.helloClient || hello('reddit');
   const user = await helloClient.api('api/v1/me');
   return user.name;
 }
