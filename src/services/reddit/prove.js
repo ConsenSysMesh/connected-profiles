@@ -156,5 +156,5 @@ export async function proveLoggedInUsername(address, options) {
   const claimRecord = usernameClaim(address, username, proofUrl);
   const hashes = await registerClaim(claimRecord, proofOptions);
   await updateProofOnReddit(claimRecord, hashes, proofOptions);
-  return claimRecord;
+  return { claimRecord, hashes };
 }
