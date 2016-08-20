@@ -34,5 +34,8 @@
     "tcomb": "^3.2.5",
     "uport-registry": "file:../uport-registry",
     "web3": "^0.16.0"
+  },
+  "browser": {
+    "ipfs-js": "browser-ipfs"
   }
 }

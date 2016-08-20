@@ -7,6 +7,7 @@ import uport from 'uport-registry';
 import './init';
 import { proofTitle, proofText, proofUpdateText } from './templates';
 import { ProofOptions } from '../options';
+import setAttributes from '../../set-attributes';
 
 
 export function login(options) {
@@ -78,7 +79,7 @@ export function usernameClaim(address, username, url) {
 }
 
 export async function registerClaim(claimRecord, options) {
-  const { web3Provider, ipfsProvider, registryAddress, txOptions = {}} = options;
+  const { web3Provider, ipfsProvider, contracts, txOptions = {}} = options;
   uport.setWeb3Provider(web3Provider);
   uport.setIpfsProvider(ipfsProvider);
   ipfs.setProvider(ipfsProvider);
@@ -86,7 +87,8 @@ export async function registerClaim(claimRecord, options) {
   const subjectAddress = claimRecord.payload.subject.address;
   let fetchedRecords = null;
   try {
-    fetchedRecords = await uport.getAttributes(registryAddress, subjectAddress);
+    fetchedRecords = await uport.getAttributes(
+      contracts.UportRegistry.address, subjectAddress);
   } catch (err) {
     // An error is thrown when no attributes have been registered.
   }
@@ -97,8 +99,11 @@ export async function registerClaim(claimRecord, options) {
   const addJson = Promise.promisify(ipfs.addJson);
   const ipfsHash = await addJson(updatedRecords);
 
-  const txhash = await uport.setAttributes(
-    registryAddress, updatedRecords, { from: subjectAddress, ...txOptions });
+  const txhash = await setAttributes(contracts, updatedRecords, {
+    provider: web3Provider,
+    ipfsProvider,
+    txOptions: { from: subjectAddress, ...txOptions },
+  });
   return { tx: txhash, ipfs: ipfsHash };
 }
 
