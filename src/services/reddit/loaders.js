@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader';
-import _ from 'lodash';
+import get from 'lodash/get';
+import isArray from 'lodash/isArray';
 import uport from 'uport-registry';
 
 
@@ -31,14 +32,14 @@ export function usernameAttributeFetcher(options) {
     const profiles = await profileLoader.loadMany(addresses);
     return profiles.map(profile => {
       let attribute = null;
-      if (_.isArray(profile.attributes)) {
+      if (isArray(profile.attributes)) {
         attribute = profile.attributes.find(attr => {
-          const claim = _.get(attr, 'payload.claim');
+          const claim = get(attr, 'payload.claim');
           if (claim == null || claim.account[0] == null) {
             return false;
           }
           const isRedditClaim = claim.account[0].service === 'reddit';
-          const isClaimSubject = _.get(attr, 'payload.subject.address') === profile.address;
+          const isClaimSubject = get(attr, 'payload.subject.address') === profile.address;
           return isRedditClaim && isClaimSubject;
         });
         attribute = attribute || null;
@@ -53,7 +54,7 @@ export function usernameFetcher(options) {
     const usernameAttributes = await usernameAttributeFetcher(options)(addresses);
     return usernameAttributes.map(({ address, attribute }) => ({
       address,
-      username: _.get(attribute, 'payload.claim.account[0].identifier', null),
+      username: get(attribute, 'payload.claim.account[0].identifier', null),
     }));
   };
 }

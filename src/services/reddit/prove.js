@@ -2,7 +2,7 @@ import Promise from 'bluebird';
 import hello from 'hellojs';
 import indentString from 'indent-string';
 import ipfs from 'ipfs-js';
-import _ from 'lodash';
+import pick from 'lodash/pick';
 import uport from 'uport-registry';
 import './init';
 import { proofTitle, proofText, proofUpdateText } from './templates';
@@ -27,7 +27,7 @@ export async function getLoggedInUsername(options) {
 }
 
 function getAppInfo(options = {}) {
-  let appInfo = _.pick(options, ['appName', 'appUrl']);
+  let appInfo = pick(options, ['appName', 'appUrl']);
   if (appInfo.appName == null || appInfo.appUrl == null) {
     appInfo = { appName: 'Benefactory', appUrl: 'http://www.benefactory.cc' };
   }

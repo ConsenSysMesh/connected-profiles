@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import forEach from 'lodash/forEach';
 import t from 'tcomb';
 
 
@@ -25,6 +25,6 @@ export class Collector {
 
 export function collectFromLoaders(envLoaders) {
   const collector = new Collector();
-  _.forEach(envLoaders, (loader) => loader.load(collector));
+  forEach(envLoaders, (loader) => loader.load(collector));
   return collector.contracts;
 }
