@@ -1,6 +1,6 @@
 import Promise from 'bluebird';
 import { reddit } from 'connected-profiles';
-import contracts from 'connected-profiles/lib/contracts/development';
+import { development as contracts } from 'connected-profiles/lib/contracts';
 import React, { Component } from 'react';
 import { waitForContract } from 'transaction-monad/lib/utils';
 import Web3 from 'web3';

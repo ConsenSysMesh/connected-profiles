@@ -5,8 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "compile": "babel src -d lib",
-    "prepublish": "npm run compile",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "_prepublish": "npm run compile"
   },
   "author": "Niran Babalola <niran.babalola@consensys.net",
   "devDependencies": {
@@ -21,21 +21,34 @@
     "eslint-plugin-react": "^5.0.1",
     "ethereumjs-testrpc": "^2.0.9",
     "sinon": "^1.17.4",
-    "transaction-monad": "file:../transaction-monad",
+    "transaction-monad": "file:../transaction-monad-0.1.0.tgz",
     "truffle": "^1.0.3"
   },
   "dependencies": {
     "bluebird": "^3.3.4",
+    "browser-ipfs": "0.0.6",
     "dataloader": "^1.2.0",
     "hellojs": "^1.13.2",
     "indent-string": "^3.0.0",
     "ipfs-js": "0.0.10",
     "lodash": "~4",
     "tcomb": "^3.2.5",
-    "uport-registry": "file:../uport-registry",
+    "uport-registry": "file:../uport-registry-1.2.3.tgz",
     "web3": "^0.16.0"
   },
   "browser": {
     "ipfs-js": "browser-ipfs"
-  }
+  },
+  "bundledDependencies": [
+    "bluebird",
+    "browser-ipfs",
+    "dataloader",
+    "hellojs",
+    "indent-string",
+    "ipfs-js",
+    "lodash",
+    "tcomb",
+    "uport-registry",
+    "web3"
+  ]
 }
