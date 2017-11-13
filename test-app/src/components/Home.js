@@ -21,12 +21,14 @@ export default class ConnectButton extends Component {
     const deployTx = {
       from: accounts[0],
       data: contracts.UportRegistry.binary,
+      gas: 1000000,
     };
     const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
     const txhash = await sendTransaction(deployTx);
     const registryAddress = await waitForContract(txhash, web3Provider);
 
     const options = {
+      contracts,
       ipfsProvider: {
         host: 'ipfs.infura.io',
         port: '5001',
