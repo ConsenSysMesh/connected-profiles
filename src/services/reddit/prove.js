@@ -10,6 +10,10 @@ import { ProofOptions } from '../options';
 import setAttributes from '../../set-attributes';
 
 
+export function init(options) {
+  hello('reddit').init(options);
+}
+
 export function login(options) {
   const helloClient = options.helloClient || hello('reddit');
   return helloClient.login({

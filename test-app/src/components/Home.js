@@ -28,14 +28,18 @@ export default class ConnectButton extends Component {
     const registryAddress = await waitForContract(txhash, web3Provider);
 
     const options = {
-      contracts,
+      contracts: {
+        UportRegistry: {
+          ...contracts.UportRegistry,
+          address: registryAddress,
+        },
+      },
       ipfsProvider: {
         host: 'ipfs.infura.io',
         port: '5001',
         protocol: 'https',
       },
       redirectUri: 'http://localhost:3000/oauth/reddit',
-      registryAddress,
       web3Provider,
       appName: 'Connected Profiles Test App',
       appUrl: 'http://localhost:3000/',
